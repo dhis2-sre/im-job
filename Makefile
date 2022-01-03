@@ -2,9 +2,6 @@ tag ?= latest
 version ?= $(shell yq e '.version' helm/Chart.yaml)
 clean-cmd = docker compose down --remove-orphans --volumes
 
-binary:
-	go build -o im-job -ldflags "-s -w" ./cmd/serve
-
 smoke-test:
 	docker compose up -d jwks
 	sleep 3
