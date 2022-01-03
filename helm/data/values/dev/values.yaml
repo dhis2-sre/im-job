@@ -1,0 +1,16 @@
+image:
+  repository: dhis2/im-manager
+  pullPolicy: Always
+
+serviceAccount:
+  annotations:
+    eks.amazonaws.com/role-arn: arn:aws:iam::767224633206:role/instance-cluster-test-instance-manager-api-feature
+
+userService:
+  host: im-user-dev.instance-manager-dev.svc.cluster.local:8080
+  basePath: /
+
+jwks:
+  host: http://im-user-dev.instance-manager-dev.svc.cluster.local:8080/jwks
+  index: 0
+  minimumRefreshInterval: 960 # 15 minutes
