@@ -2,7 +2,7 @@ apiVersion: skaffold/v2beta25
 kind: Config
 build:
   artifacts:
-    - image: tons/im-job
+    - image: dhis2/im-job
 deploy:
   statusCheckDeadlineSeconds: 120
   helm:
@@ -12,7 +12,7 @@ deploy:
         createNamespace: true
         chartPath: helm/chart
         artifactOverrides:
-          image: tons/im-job
+          image: dhis2/im-job
         imageStrategy:
           helm: { }
         useHelmSecrets: true

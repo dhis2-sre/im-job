@@ -1,5 +1,10 @@
 package docs
 
+import (
+	"github.com/dhis2-sre/im-job/pkg/job"
+	"github.com/dhis2-sre/im-job/pkg/model"
+)
+
 // swagger:response
 type Error struct {
 	// The error message
@@ -7,9 +12,23 @@ type Error struct {
 	Message string
 }
 
-//swagger:parameters findDatabaseById lockDatabaseById unlockDatabaseById uploadDatabase deleteDatabaseById updateDatabaseById
+// swagger:response
+type Job struct {
+	//in: body
+	Job model.Job
+}
+
+//swagger:parameters findJob runJob
 type IdParam struct {
 	// in: path
 	// required: true
 	ID uint `json:"id"`
+}
+
+// swagger:parameters runJob
+type _ struct {
+	// Run job request body parameter
+	// in: body
+	// required: true
+	Body job.RunJobRequest
 }

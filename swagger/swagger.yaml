@@ -1,22 +1,116 @@
 consumes:
 - application/json
+definitions:
+  Job:
+    properties:
+      ID:
+        format: uint64
+        type: integer
+      Name:
+        type: string
+      Script:
+        type: string
+    type: object
+    x-go-package: github.com/dhis2-sre/im-job/pkg/model
+  RunJobRequest:
+    properties:
+      groupId:
+        format: uint64
+        type: integer
+        x-go-name: GroupID
+      payload:
+        additionalProperties:
+          type: string
+        type: object
+        x-go-name: Payload
+    type: object
+    x-go-package: github.com/dhis2-sre/im-job/pkg/job
 info:
   contact:
     email: info@dhis2.org
     url: https://github.com/dhis2-sre/im-job
-  description: Database Manager Service as part of the Instance Manager environment
+  description: Instance Job Manager Service as part of the Instance Manager environment
   license:
     name: TODO
   termsOfService: There are no TOS at this moment, use at your own risk we take no
     responsibility
-  title: Instance Database Manager Service.
+  title: Instance Job Manager Service.
   version: 0.1.0
-paths: {}
+paths:
+  /jobs:
+    get:
+      description: List jobs
+      operationId: listJobs
+      responses:
+        "200":
+          $ref: '#/responses/Job'
+        "401":
+          $ref: '#/responses/Error'
+        "403":
+          $ref: '#/responses/Error'
+        "415":
+          $ref: '#/responses/Error'
+      security:
+      - oauth2: []
+  /jobs/{id}:
+    get:
+      description: Find job by id
+      operationId: findJob
+      parameters:
+      - format: uint64
+        in: path
+        name: id
+        required: true
+        type: integer
+        x-go-name: ID
+      responses:
+        "200":
+          $ref: '#/responses/Job'
+        "401":
+          $ref: '#/responses/Error'
+        "403":
+          $ref: '#/responses/Error'
+        "415":
+          $ref: '#/responses/Error'
+      security:
+      - oauth2: []
+  /jobs/{id}/run:
+    get:
+      description: Run job
+      operationId: runJob
+      parameters:
+      - format: uint64
+        in: path
+        name: id
+        required: true
+        type: integer
+        x-go-name: ID
+      - description: Run job request body parameter
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/RunJobRequest'
+      responses:
+        "200":
+          $ref: '#/responses/Job'
+        "401":
+          $ref: '#/responses/Error'
+        "403":
+          $ref: '#/responses/Error'
+        "415":
+          $ref: '#/responses/Error'
+      security:
+      - oauth2: []
 produces:
 - application/json
 responses:
   Error:
     description: ""
+  Job:
+    description: ""
+    schema:
+      $ref: '#/definitions/Job'
 securityDefinitions:
   oauth2:
     flow: password

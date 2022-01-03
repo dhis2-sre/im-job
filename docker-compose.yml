@@ -11,7 +11,7 @@ x-service: &common-dev-test
 version: "3.6"
 services:
   prod:
-    image: tons/im-job:${IMAGE_TAG:-latest}
+    image: dhis2/im-job:${IMAGE_TAG:-latest}
     build: .
     env_file:
       - .env
