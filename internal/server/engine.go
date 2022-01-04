@@ -27,8 +27,8 @@ func GetEngine(environment di.Environment) *gin.Engine {
 	tokenAuthenticationRouter.GET("/jobs", environment.JobHandler.List)
 	tokenAuthenticationRouter.GET("/jobs/:id", environment.JobHandler.FindById)
 	tokenAuthenticationRouter.POST("/jobs/:id/run", environment.JobHandler.Run)
-	//	tokenAuthenticationRouter.GET("/jobs/running/:rid/status", health.Health)
-	//	tokenAuthenticationRouter.GET("/jobs/running/:rid/logs", health.Health)
+	tokenAuthenticationRouter.POST("/jobs/running/:runId/status", environment.JobHandler.Status)
+	//	tokenAuthenticationRouter.GET("/jobs/running/:runId/logs", health.Health)
 
 	return r
 }

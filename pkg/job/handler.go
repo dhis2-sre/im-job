@@ -80,6 +80,10 @@ type RunJobRequest struct {
 	Payload map[string]string `json:"payload" binding:"required"`
 }
 
+type RunJobResponse struct {
+	RunId string `json:"runId"`
+}
+
 // Run job
 // swagger:route GET /jobs/{id}/run runJob
 //
@@ -91,6 +95,7 @@ type RunJobRequest struct {
 // responses:
 //   200: Job
 //   401: Error
+//   400: Error
 //   403: Error
 //   415: Error
 func (h Handler) Run(c *gin.Context) {
@@ -120,11 +125,64 @@ func (h Handler) Run(c *gin.Context) {
 		return
 	}
 
-	rid, err := h.jobService.Run(uint(id), group, request.Payload)
+	runId, err := h.jobService.Run(uint(id), group, request.Payload)
 	if err != nil {
 		_ = c.Error(err)
 		return
 	}
 
-	c.JSON(http.StatusOK, rid)
+	c.JSON(http.StatusOK, RunJobResponse{runId})
+}
+
+type StatusRequest struct {
+	GroupID uint `json:"groupId" binding:"required"`
+}
+
+// Status job
+// swagger:route GET /jobs/running/{runId}/status jobStatus
+//
+// Job status
+//
+// Security:
+//   oauth2:
+//
+// responses:
+//   200: Job
+//   400: Error
+//   401: Error
+//   403: Error
+//   415: Error
+func (h Handler) Status(c *gin.Context) {
+	runId := c.Param("runId")
+	if runId == "" {
+		badRequest := apperror.NewBadRequest("error parsing id")
+		_ = c.Error(badRequest)
+		return
+	}
+
+	token, err := handler.GetTokenFromHttpAuthHeader(c)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	var request StatusRequest
+	if err := handler.DataBinder(c, &request); err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	group, err := h.userClient.FindGroupById(token, request.GroupID)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	status, err := h.jobService.Status(runId, group)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	c.JSON(http.StatusOK, status)
 }

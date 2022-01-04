@@ -4,12 +4,14 @@ import (
 	"github.com/dhis2-sre/im-job/pkg/config"
 	"github.com/dhis2-sre/im-job/pkg/model"
 	"github.com/dhis2-sre/im-user/swagger/sdk/models"
+	batchv1 "k8s.io/api/batch/v1"
 )
 
 type Service interface {
 	List() ([]*model.Job, error)
 	FindById(id uint) (*model.Job, error)
 	Run(id uint, group *models.Group, payload map[string]string) (string, error)
+	Status(rid string, group *models.Group) (*batchv1.JobStatus, error)
 }
 
 func ProvideService(c config.Config, repository Repository, kubernetes KubernetesService) Service {
@@ -46,10 +48,20 @@ func (s service) Run(id uint, group *models.Group, payload map[string]string) (s
 		return "", err
 	}
 
-	rid, err := s.kubernetes.RunJob(job.Name, job.Script, group.Name, payload, group.ClusterConfiguration)
+	runId, err := s.kubernetes.RunJob(job.Name, job.Script, group.Name, payload, group.ClusterConfiguration)
 	if err != nil {
 		return "", err
 	}
 
-	return rid, nil
+	return runId, nil
+}
+
+// TODO: Don't return batchv1.JobStatus, the handler shouldn't know about batchv1.JobStatus
+func (s service) Status(runId string, group *models.Group) (*batchv1.JobStatus, error) {
+	status, err := s.kubernetes.JobStatus(runId, group.Name, group.ClusterConfiguration)
+	if err != nil {
+		return &batchv1.JobStatus{}, err
+	}
+
+	return status, nil
 }
