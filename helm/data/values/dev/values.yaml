@@ -14,3 +14,6 @@ jwks:
   host: http://im-user-dev.instance-manager-dev.svc.cluster.local:8080/jwks
   index: 0
   minimumRefreshInterval: 960 # 15 minutes
+
+groups:
+  names: whoami

@@ -13,3 +13,6 @@ jwks:
   host: http://im-user-prod.instance-manager-prod.svc.cluster.local:8080/jwks
   index: 0
   minimumRefreshInterval: 960 # 15 minutes
+
+groups:
+  names: whoami,play
