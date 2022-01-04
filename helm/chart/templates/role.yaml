@@ -35,5 +35,11 @@ rules:
     verbs:
       - create
       - list
+  - apiGroups:
+      - ""
+    resources:
+      - pods/log
+    verbs:
+      - get
 ---
 {{- end }}

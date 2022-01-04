@@ -21,6 +21,7 @@ import (
 type KubernetesService interface {
 	RunJob(name, script, namespace string, payload map[string]string, configuration *models.ClusterConfiguration) (string, error)
 	JobStatus(rid string, namespace string, configuration *models.ClusterConfiguration) (*batchv1.JobStatus, error)
+	Executor(configuration *models.ClusterConfiguration, fn func(client *kubernetes.Clientset) error) (error, error)
 }
 
 func ProvideKubernetesService() KubernetesService {
@@ -107,6 +108,14 @@ func (k kubernetesService) JobStatus(runId string, namespace string, configurati
 	}
 
 	return &jobs[0].Status, nil
+}
+
+func (k kubernetesService) Executor(configuration *models.ClusterConfiguration, fn func(client *kubernetes.Clientset) error) (error, error) {
+	client, err := k.getClient(configuration)
+	if err != nil {
+		return err, nil
+	}
+	return nil, fn(client)
 }
 
 func (k kubernetesService) getClient(configuration *models.ClusterConfiguration) (*kubernetes.Clientset, error) {

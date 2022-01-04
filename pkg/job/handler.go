@@ -1,10 +1,12 @@
 package job
 
 import (
+	"bufio"
 	"github.com/dhis2-sre/im-job/internal/apperror"
 	"github.com/dhis2-sre/im-job/internal/handler"
 	userClient "github.com/dhis2-sre/im-user/pkg/client"
 	"github.com/gin-gonic/gin"
+	"io"
 	"net/http"
 	"strconv"
 )
@@ -185,4 +187,62 @@ func (h Handler) Status(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, status)
+}
+
+type LogsRequest struct {
+	GroupID uint `json:"groupId" binding:"required"`
+}
+
+func (h Handler) Logs(c *gin.Context) {
+	runId := c.Param("runId")
+	if runId == "" {
+		badRequest := apperror.NewBadRequest("error parsing id")
+		_ = c.Error(badRequest)
+		return
+	}
+
+	token, err := handler.GetTokenFromHttpAuthHeader(c)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	var request StatusRequest
+	if err := handler.DataBinder(c, &request); err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	group, err := h.userClient.FindGroupById(token, request.GroupID)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	readCloser, err := h.jobService.Logs(runId, group)
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
+
+	defer func(readCloser io.ReadCloser) {
+		err := readCloser.Close()
+		if err != nil {
+			_ = c.Error(err)
+		}
+	}(readCloser)
+
+	bufferedReader := bufio.NewReader(readCloser)
+
+	c.Stream(func(writer io.Writer) bool {
+		readBytes, err := bufferedReader.ReadBytes('\n')
+		if err != nil {
+			return false
+		}
+
+		_, err = writer.Write(readBytes)
+		return err == nil
+	})
+
+	c.Status(http.StatusOK)
 }

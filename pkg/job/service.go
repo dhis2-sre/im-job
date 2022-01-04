@@ -1,10 +1,17 @@
 package job
 
 import (
+	"context"
+	"errors"
+	"fmt"
 	"github.com/dhis2-sre/im-job/pkg/config"
 	"github.com/dhis2-sre/im-job/pkg/model"
 	"github.com/dhis2-sre/im-user/swagger/sdk/models"
+	"io"
 	batchv1 "k8s.io/api/batch/v1"
+	v1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
 )
 
 type Service interface {
@@ -12,6 +19,7 @@ type Service interface {
 	FindById(id uint) (*model.Job, error)
 	Run(id uint, group *models.Group, payload map[string]string) (string, error)
 	Status(rid string, group *models.Group) (*batchv1.JobStatus, error)
+	Logs(runId string, group *models.Group) (io.ReadCloser, error)
 }
 
 func ProvideService(c config.Config, repository Repository, kubernetes KubernetesService) Service {
@@ -64,4 +72,54 @@ func (s service) Status(runId string, group *models.Group) (*batchv1.JobStatus, 
 	}
 
 	return status, nil
+}
+
+func (s service) Logs(runId string, group *models.Group) (io.ReadCloser, error) {
+	var read io.ReadCloser
+
+	err, fnErr := s.kubernetes.Executor(group.ClusterConfiguration, func(client *kubernetes.Clientset) error {
+		pod, err := s.getPod(client, runId)
+		if err != nil {
+			return err
+		}
+
+		podLogOptions := v1.PodLogOptions{
+			Follow: true,
+		}
+
+		readCloser, err := client.
+			CoreV1().
+			Pods(pod.Namespace).
+			GetLogs(pod.Name, &podLogOptions).
+			Stream(context.TODO())
+		read = readCloser
+		return err
+	})
+
+	if err != nil {
+		return nil, err
+	}
+
+	if fnErr != nil {
+		return nil, fnErr
+	}
+
+	return read, nil
+}
+
+func (s service) getPod(client *kubernetes.Clientset, runId string) (v1.Pod, error) {
+	listOptions := metav1.ListOptions{
+		LabelSelector: fmt.Sprintf("runId=%s", runId),
+	}
+
+	podList, err := client.CoreV1().Pods("").List(context.TODO(), listOptions)
+	if err != nil {
+		return v1.Pod{}, err
+	}
+
+	if len(podList.Items) > 1 {
+		return v1.Pod{}, errors.New("multiple pods found")
+	}
+
+	return podList.Items[0], nil
 }
