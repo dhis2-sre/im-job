@@ -18,7 +18,7 @@ type Service interface {
 	List() ([]*model.Job, error)
 	FindById(id uint) (*model.Job, error)
 	Run(id uint, group *models.Group, payload map[string]string) (string, error)
-	Status(rid string, group *models.Group) (*batchv1.JobStatus, error)
+	Status(rid string, group *models.Group) (batchv1.JobStatus, error)
 	Logs(runId string, group *models.Group) (io.ReadCloser, error)
 }
 
@@ -51,12 +51,16 @@ func (s service) FindById(id uint) (*model.Job, error) {
 }
 
 func (s service) Run(id uint, group *models.Group, payload map[string]string) (string, error) {
+	// TODO: Merge payload with hostname of dhis2 and postgresql
+	// And credentials for postgresql... And perhaps admin/district... And more?
+
 	job, err := s.repository.FindById(id)
 	if err != nil {
 		return "", err
 	}
 
-	runId, err := s.kubernetes.RunJob(job.Name, job.Script, group.Name, payload, group.ClusterConfiguration)
+	name := fmt.Sprintf("%s-%s", job.Name, job.JobType)
+	runId, err := s.kubernetes.RunJob(name, job.Script, group.Name, payload, group.ClusterConfiguration)
 	if err != nil {
 		return "", err
 	}
@@ -65,10 +69,10 @@ func (s service) Run(id uint, group *models.Group, payload map[string]string) (s
 }
 
 // TODO: Don't return batchv1.JobStatus, the handler shouldn't know about batchv1.JobStatus
-func (s service) Status(runId string, group *models.Group) (*batchv1.JobStatus, error) {
+func (s service) Status(runId string, group *models.Group) (batchv1.JobStatus, error) {
 	status, err := s.kubernetes.JobStatus(runId, group.Name, group.ClusterConfiguration)
 	if err != nil {
-		return &batchv1.JobStatus{}, err
+		return batchv1.JobStatus{}, err
 	}
 
 	return status, nil
@@ -107,6 +111,7 @@ func (s service) Logs(runId string, group *models.Group) (io.ReadCloser, error) 
 	return read, nil
 }
 
+// TODO: This method should be moved down to KubernetesService
 func (s service) getPod(client *kubernetes.Clientset, runId string) (v1.Pod, error) {
 	listOptions := metav1.ListOptions{
 		LabelSelector: fmt.Sprintf("runId=%s", runId),
