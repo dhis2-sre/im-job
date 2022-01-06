@@ -19,22 +19,25 @@ type repository struct {
 func (r repository) List() ([]*model.Job, error) {
 	return []*model.Job{
 		{
-			ID:      1,
-			Name:    "env",
-			JobType: "database",
-			Script:  "/scripts/database/env.sh",
+			ID:          1,
+			Name:        "env",
+			Description: "Show environment variables",
+			JobType:     "database",
+			Script:      "/scripts/database/env.sh",
 		},
 		{
-			ID:      2,
-			Name:    "save",
-			JobType: "database",
-			Script:  "/scripts/database/save.sh",
+			ID:          2,
+			Name:        "save",
+			Description: "Save database",
+			JobType:     "database",
+			Script:      "/scripts/database/save.sh",
 		},
 		{
-			ID:      3,
-			Name:    "saveas",
-			JobType: "database",
-			Script:  "/scripts/database/saveAs.sh",
+			ID:          3,
+			Name:        "saveas",
+			Description: "Save copy of database",
+			JobType:     "database",
+			Script:      "/scripts/database/saveAs.sh",
 		},
 	}, nil
 }
