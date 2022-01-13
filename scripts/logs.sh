@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-HTTP="http --verify=no --check-status"
+set -euo pipefail
 
 GROUP_NAME=$1
 RUN_ID=$2
