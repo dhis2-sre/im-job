@@ -17,7 +17,7 @@ import (
 type Service interface {
 	List() ([]*model.Job, error)
 	FindById(id uint) (*model.Job, error)
-	Run(id uint, group *models.Group, payload map[string]string) (string, error)
+	Run(id uint, jobType string, targetId uint, group *models.Group, payload map[string]string) (string, error)
 	Status(rid string, group *models.Group) (batchv1.JobStatus, error)
 	Logs(runId string, group *models.Group) (io.ReadCloser, error)
 }
@@ -50,16 +50,36 @@ func (s service) FindById(id uint) (*model.Job, error) {
 	return job, nil
 }
 
-func (s service) Run(id uint, group *models.Group, payload map[string]string) (string, error) {
-	// TODO: Merge payload with hostname of dhis2 and postgresql
-	// And credentials for postgresql... And perhaps admin/district... And more?
+func (s service) Run(id uint, jobType string, targetId uint, group *models.Group, payload map[string]string) (string, error) {
+	if jobType == "database" {
+		label := fmt.Sprintf("dhis2-data-id=%d", targetId)
+		pod, err := s.kubernetes.GetPodByLabel(label, group.ClusterConfiguration)
+		if err != nil {
+			return "", err
+		}
+
+		payload["DHIS2_DATABASE_HOSTNAME"] = fmt.Sprintf("%s-database-postgresql.%s.svc.cluster.local", pod.Name, pod.Namespace)
+		payload["DHIS2_DATABASE_USERNAME"] = s.c.Dhis2Database.Username
+		payload["DHIS2_DATABASE_PASSWORD"] = s.c.Dhis2Database.Password
+		payload["DHIS2_DATABASE_DATABASE"] = s.c.Dhis2Database.Database
+	}
+
+	if jobType == "instance" {
+		label := fmt.Sprintf("dhis2-id=%d", targetId)
+		pod, err := s.kubernetes.GetPodByLabel(label, group.ClusterConfiguration)
+		if err != nil {
+			return "", err
+		}
+
+		payload["DHIS2_HOSTNAME"] = fmt.Sprintf("%s-dhis2-core.%s.svc.cluster.local", pod.Name, pod.Namespace)
+	}
 
 	job, err := s.repository.FindById(id)
 	if err != nil {
 		return "", err
 	}
 
-	name := fmt.Sprintf("%s-%s", job.Name, job.JobType)
+	name := fmt.Sprintf("%s-%s-%d", job.Name, job.JobType, targetId)
 	runId, err := s.kubernetes.RunJob(name, job.Script, group.Name, payload, group.ClusterConfiguration)
 	if err != nil {
 		return "", err
@@ -82,7 +102,7 @@ func (s service) Logs(runId string, group *models.Group) (io.ReadCloser, error) 
 	var read io.ReadCloser
 
 	err, fnErr := s.kubernetes.Executor(group.ClusterConfiguration, func(client *kubernetes.Clientset) error {
-		pod, err := s.getPod(client, runId)
+		pod, err := s.getPodByRunId(client, runId)
 		if err != nil {
 			return err
 		}
@@ -111,10 +131,14 @@ func (s service) Logs(runId string, group *models.Group) (io.ReadCloser, error) 
 	return read, nil
 }
 
+func (s service) getPodByRunId(client *kubernetes.Clientset, runId string) (v1.Pod, error) {
+	return s.getPodByLabel(client, fmt.Sprintf("runId=%s", runId))
+}
+
 // TODO: This method should be moved down to KubernetesService
-func (s service) getPod(client *kubernetes.Clientset, runId string) (v1.Pod, error) {
+func (s service) getPodByLabel(client *kubernetes.Clientset, label string) (v1.Pod, error) {
 	listOptions := metav1.ListOptions{
-		LabelSelector: fmt.Sprintf("runId=%s", runId),
+		LabelSelector: label,
 	}
 
 	podList, err := client.CoreV1().Pods("").List(context.TODO(), listOptions)

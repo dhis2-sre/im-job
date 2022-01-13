@@ -20,6 +20,11 @@ func ProvideConfig() Config {
 				MinimumRefreshInterval: requireEnvAsInt("JWKS_MINIMUM_REFRESH_INTERVAL"),
 			},
 		},
+		Dhis2Database: dhis2Database{
+			Username: requireEnv("DHIS2_DATABASE_USERNAME"),
+			Password: requireEnv("DHIS2_DATABASE_PASSWORD"),
+			Database: requireEnv("DHIS2_DATABASE_DATABASE"),
+		},
 	}
 }
 
@@ -28,6 +33,7 @@ type Config struct {
 	UserService    service
 	Authentication Authentication
 	Bucket         string
+	Dhis2Database  dhis2Database
 }
 
 type service struct {
@@ -35,6 +41,12 @@ type service struct {
 	BasePath string
 	Username string
 	Password string
+}
+
+type dhis2Database struct {
+	Username string
+	Password string
+	Database string
 }
 
 type Authentication struct {

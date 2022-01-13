@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/dhis2-sre/im-job/internal/apperror"
 	"github.com/dhis2-sre/im-user/swagger/sdk/models"
 	"github.com/lithammer/shortuuid/v3"
 	"go.mozilla.org/sops/v3/cmd/sops/formats"
@@ -17,10 +18,14 @@ import (
 	"strings"
 )
 
+// TODO: This code is shit! What's the point of associating all functions with an empty struct?
+// Place this code in a package of it's own and either drop the struct or use it
+
 type KubernetesService interface {
 	RunJob(name, script, namespace string, payload map[string]string, configuration *models.ClusterConfiguration) (string, error)
 	JobStatus(rid string, namespace string, configuration *models.ClusterConfiguration) (batchv1.JobStatus, error)
 	Executor(configuration *models.ClusterConfiguration, fn func(client *kubernetes.Clientset) error) (error, error)
+	GetPodByLabel(label string, configuration *models.ClusterConfiguration) (corev1.Pod, error)
 }
 
 func ProvideKubernetesService() KubernetesService {
@@ -205,4 +210,32 @@ func (k kubernetesService) decrypt(data []byte, format string) ([]byte, error) {
 		return nil, err
 	}
 	return kubernetesConfigurationCleartext, nil
+}
+
+func (k kubernetesService) GetPodByLabel(label string, configuration *models.ClusterConfiguration) (corev1.Pod, error) {
+	client, err := k.getClient(configuration)
+	if err != nil {
+		return corev1.Pod{}, err
+	}
+
+	listOptions := metav1.ListOptions{
+		LabelSelector: label,
+	}
+
+	podList, err := client.CoreV1().Pods("").List(context.TODO(), listOptions)
+	if err != nil {
+		return corev1.Pod{}, err
+	}
+
+	if len(podList.Items) > 1 {
+		badRequest := apperror.NewBadRequest("multiple pods found")
+		return corev1.Pod{}, badRequest
+	}
+
+	if len(podList.Items) < 1 {
+		badRequest := apperror.NewBadRequest("pod not found")
+		return corev1.Pod{}, badRequest
+	}
+
+	return podList.Items[0], nil
 }

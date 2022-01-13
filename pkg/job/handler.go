@@ -78,8 +78,10 @@ func (h Handler) FindById(c *gin.Context) {
 }
 
 type RunJobRequest struct {
-	GroupID uint              `json:"groupId" binding:"required"`
-	Payload map[string]string `json:"payload" binding:"required"`
+	JobType  string            `json:"jobType" binding:"required"`
+	GroupID  uint              `json:"groupId" binding:"required"`
+	TargetID uint              `json:"targetId" binding:"required"`
+	Payload  map[string]string `json:"payload" binding:"required"`
 }
 
 type RunJobResponse struct {
@@ -95,7 +97,7 @@ type RunJobResponse struct {
 //   oauth2:
 //
 // responses:
-//   200: Job
+//   200: RunJobResponse
 //   401: Error
 //   400: Error
 //   403: Error
@@ -127,7 +129,7 @@ func (h Handler) Run(c *gin.Context) {
 		return
 	}
 
-	runId, err := h.jobService.Run(uint(id), group, request.Payload)
+	runId, err := h.jobService.Run(uint(id), request.JobType, request.TargetID, group, request.Payload)
 	if err != nil {
 		_ = c.Error(err)
 		return

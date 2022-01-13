@@ -17,6 +17,11 @@ userService:
   host: http://user-service.namespace.svc.cluster.local
   basePath:
 
+dhis2Database:
+  username: username
+  password: password
+  database: database
+
 image:
   repository: dhis2/im-job
   pullPolicy: IfNotPresent

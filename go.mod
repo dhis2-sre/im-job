@@ -6,7 +6,10 @@ require (
 	github.com/dhis2-sre/im-user v0.4.0
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.7.7
+	github.com/go-openapi/errors v0.20.1
 	github.com/go-openapi/runtime v0.21.0
+	github.com/go-openapi/strfmt v0.21.1
+	github.com/go-openapi/swag v0.19.15
 	github.com/gofrs/uuid v4.2.0+incompatible
 	github.com/google/wire v0.5.0
 	github.com/lestrrat-go/jwx v1.2.14
@@ -44,13 +47,10 @@ require (
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-logr/logr v1.2.0 // indirect
 	github.com/go-openapi/analysis v0.21.1 // indirect
-	github.com/go-openapi/errors v0.20.1 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.19.6 // indirect
 	github.com/go-openapi/loads v0.21.0 // indirect
 	github.com/go-openapi/spec v0.20.4 // indirect
-	github.com/go-openapi/strfmt v0.21.1 // indirect
-	github.com/go-openapi/swag v0.19.15 // indirect
 	github.com/go-openapi/validate v0.20.3 // indirect
 	github.com/go-playground/locales v0.13.0 // indirect
 	github.com/go-playground/universal-translator v0.17.0 // indirect
@@ -106,11 +106,11 @@ require (
 	github.com/sirupsen/logrus v1.4.2 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/ugorji/go/codec v1.1.7 // indirect
-	go.mongodb.org/mongo-driver v1.8.0 // indirect
+	go.mongodb.org/mongo-driver v1.8.2 // indirect
 	go.mozilla.org/gopgagent v0.0.0-20170926210634-4d7ea76ff71a // indirect
 	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/crypto v0.0.0-20210921155107-089bfa567519 // indirect
-	golang.org/x/net v0.0.0-20211209124913-491a49abca63 // indirect
+	golang.org/x/net v0.0.0-20220111093109-d55c255bac03 // indirect
 	golang.org/x/oauth2 v0.0.0-20210819190943-2bc19b11175f // indirect
 	golang.org/x/sys v0.0.0-20210831042530-f4d43177bf5e // indirect
 	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b // indirect
