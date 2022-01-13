@@ -12,6 +12,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	"strings"
 )
 
 type Service interface {
@@ -58,7 +59,9 @@ func (s service) Run(id uint, jobType string, targetId uint, group *models.Group
 			return "", err
 		}
 
-		payload["DHIS2_DATABASE_HOSTNAME"] = fmt.Sprintf("%s-database-postgresql.%s.svc.cluster.local", pod.Name, pod.Namespace)
+		// HACK: Guessing the service name from the pod name isn't ideal. The proper way would be to label the service and fetch that
+		name := strings.TrimSuffix(pod.Name, "-0")
+		payload["DHIS2_DATABASE_HOSTNAME"] = fmt.Sprintf("%s.%s.svc.cluster.local", name, pod.Namespace)
 		payload["DHIS2_DATABASE_USERNAME"] = s.c.Dhis2Database.Username
 		payload["DHIS2_DATABASE_PASSWORD"] = s.c.Dhis2Database.Password
 		payload["DHIS2_DATABASE_DATABASE"] = s.c.Dhis2Database.Database
