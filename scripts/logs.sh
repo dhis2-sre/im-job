@@ -2,8 +2,10 @@
 
 HTTP="http --verify=no --check-status"
 
-GROUP_ID=$1
+GROUP_NAME=$1
 RUN_ID=$2
+
+GROUP_ID=$($HTTP --check-status "$INSTANCE_HOST/groups-name-to-id/$GROUP_NAME" "Authorization: Bearer $ACCESS_TOKEN")
 
 echo "{
   \"groupId\": $GROUP_ID
