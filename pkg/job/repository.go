@@ -27,13 +27,20 @@ func (r repository) List() ([]*model.Job, error) {
 		},
 		{
 			ID:          2,
+			Name:        "psql",
+			Description: "psql show tables",
+			JobType:     "database",
+			Script:      "/scripts/database/psql.sh",
+		},
+		{
+			ID:          3,
 			Name:        "save",
 			Description: "Save database",
 			JobType:     "database",
 			Script:      "/scripts/database/save.sh",
 		},
 		{
-			ID:          3,
+			ID:          4,
 			Name:        "saveas",
 			Description: "Save copy of database",
 			JobType:     "database",
