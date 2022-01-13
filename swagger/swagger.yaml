@@ -3,26 +3,52 @@ consumes:
 definitions:
   Job:
     properties:
+      Description:
+        type: string
       ID:
         format: uint64
         type: integer
+      JobType:
+        type: string
       Name:
         type: string
       Script:
         type: string
     type: object
     x-go-package: github.com/dhis2-sre/im-job/pkg/model
+  LogsRequest:
+    properties:
+      groupId:
+        format: uint64
+        type: integer
+        x-go-name: GroupID
+    type: object
+    x-go-package: github.com/dhis2-sre/im-job/pkg/job
   RunJobRequest:
     properties:
       groupId:
         format: uint64
         type: integer
         x-go-name: GroupID
+      jobType:
+        type: string
+        x-go-name: JobType
       payload:
         additionalProperties:
           type: string
         type: object
         x-go-name: Payload
+      targetId:
+        format: uint64
+        type: integer
+        x-go-name: TargetID
+    type: object
+    x-go-package: github.com/dhis2-sre/im-job/pkg/job
+  RunJobResponse:
+    properties:
+      runId:
+        type: string
+        x-go-name: RunId
     type: object
     x-go-package: github.com/dhis2-sre/im-job/pkg/job
 info:
@@ -93,7 +119,65 @@ paths:
           $ref: '#/definitions/RunJobRequest'
       responses:
         "200":
+          description: RunJobResponse
+          schema:
+            $ref: '#/definitions/RunJobResponse'
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          $ref: '#/responses/Error'
+        "403":
+          $ref: '#/responses/Error'
+        "415":
+          $ref: '#/responses/Error'
+      security:
+      - oauth2: []
+  /jobs/running/{runId}/logs:
+    get:
+      description: Job logs
+      operationId: jobLogs
+      parameters:
+      - format: uint64
+        in: path
+        name: runId
+        required: true
+        type: integer
+        x-go-name: ID
+      - description: Logs request body parameter
+        in: body
+        name: Body
+        required: true
+        schema:
+          $ref: '#/definitions/LogsRequest'
+      responses:
+        "200":
+          description: ""
+        "400":
+          $ref: '#/responses/Error'
+        "401":
+          $ref: '#/responses/Error'
+        "403":
+          $ref: '#/responses/Error'
+        "415":
+          $ref: '#/responses/Error'
+      security:
+      - oauth2: []
+  /jobs/running/{runId}/status:
+    get:
+      description: Job status
+      operationId: jobStatus
+      parameters:
+      - format: uint64
+        in: path
+        name: runId
+        required: true
+        type: integer
+        x-go-name: ID
+      responses:
+        "200":
           $ref: '#/responses/Job'
+        "400":
+          $ref: '#/responses/Error'
         "401":
           $ref: '#/responses/Error'
         "403":
@@ -111,6 +195,10 @@ responses:
     description: ""
     schema:
       $ref: '#/definitions/Job'
+  RunJob:
+    description: ""
+    schema:
+      $ref: '#/definitions/RunJobResponse'
 securityDefinitions:
   oauth2:
     flow: password

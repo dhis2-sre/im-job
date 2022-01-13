@@ -18,11 +18,24 @@ type Job struct {
 	Job model.Job
 }
 
+// swagger:response
+type RunJob struct {
+	//in: body
+	RunJob job.RunJobResponse
+}
+
 //swagger:parameters findJob runJob
 type IdParam struct {
 	// in: path
 	// required: true
 	ID uint `json:"id"`
+}
+
+//swagger:parameters jobStatus jobLogs
+type RunIdParam struct {
+	// in: path
+	// required: true
+	ID uint `json:"runId"`
 }
 
 // swagger:parameters runJob
@@ -31,4 +44,12 @@ type _ struct {
 	// in: body
 	// required: true
 	Body job.RunJobRequest
+}
+
+// swagger:parameters jobLogs
+type _ struct {
+	// Logs request body parameter
+	// in: body
+	// required: true
+	Body job.LogsRequest
 }

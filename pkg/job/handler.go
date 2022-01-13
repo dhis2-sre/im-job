@@ -195,6 +195,20 @@ type LogsRequest struct {
 	GroupID uint `json:"groupId" binding:"required"`
 }
 
+// Logs job
+// swagger:route GET /jobs/running/{runId}/logs jobLogs
+//
+// Job logs
+//
+// Security:
+//   oauth2:
+//
+// responses:
+//   200:
+//   400: Error
+//   401: Error
+//   403: Error
+//   415: Error
 func (h Handler) Logs(c *gin.Context) {
 	runId := c.Param("runId")
 	if runId == "" {
