@@ -58,6 +58,7 @@ func (h Handler) List(c *gin.Context) {
 //   200: Job
 //   401: Error
 //   403: Error
+//   404: Error
 //   415: Error
 func (h Handler) FindById(c *gin.Context) {
 	idParam := c.Param("id")
@@ -88,7 +89,7 @@ type RunJobResponse struct {
 }
 
 // Run job
-// swagger:route GET /jobs/{id}/run runJob
+// swagger:route POST /jobs/{id}/run runJob
 //
 // Run job
 //
@@ -100,6 +101,7 @@ type RunJobResponse struct {
 //   401: Error
 //   400: Error
 //   403: Error
+//   404: Error
 //   415: Error
 func (h Handler) Run(c *gin.Context) {
 	idParam := c.Param("id")
@@ -160,6 +162,7 @@ type StatusRequest struct {
 //   400: Error
 //   401: Error
 //   403: Error
+//   404: Error
 //   415: Error
 func (h Handler) Status(c *gin.Context) {
 	runId := c.Param("runId")
@@ -213,6 +216,7 @@ type LogsRequest struct {
 //   400: Error
 //   401: Error
 //   403: Error
+//   404: Error
 //   415: Error
 func (h Handler) Logs(c *gin.Context) {
 	runId := c.Param("runId")

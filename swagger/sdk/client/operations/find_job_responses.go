@@ -41,6 +41,12 @@ func (o *FindJobReader) ReadResponse(response runtime.ClientResponse, consumer r
 			return nil, err
 		}
 		return nil, result
+	case 404:
+		result := NewFindJobNotFound()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	case 415:
 		result := NewFindJobUnsupportedMediaType()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -122,6 +128,27 @@ func (o *FindJobForbidden) Error() string {
 }
 
 func (o *FindJobForbidden) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	return nil
+}
+
+// NewFindJobNotFound creates a FindJobNotFound with default headers values
+func NewFindJobNotFound() *FindJobNotFound {
+	return &FindJobNotFound{}
+}
+
+/* FindJobNotFound describes a response with status code 404, with default header values.
+
+FindJobNotFound find job not found
+*/
+type FindJobNotFound struct {
+}
+
+func (o *FindJobNotFound) Error() string {
+	return fmt.Sprintf("[GET /jobs/{id}][%d] findJobNotFound ", 404)
+}
+
+func (o *FindJobNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }

@@ -93,12 +93,14 @@ paths:
           $ref: '#/responses/Error'
         "403":
           $ref: '#/responses/Error'
+        "404":
+          $ref: '#/responses/Error'
         "415":
           $ref: '#/responses/Error'
       security:
       - oauth2: []
   /jobs/{id}/run:
-    get:
+    post:
       description: Run job
       operationId: runJob
       parameters:
@@ -124,6 +126,8 @@ paths:
         "401":
           $ref: '#/responses/Error'
         "403":
+          $ref: '#/responses/Error'
+        "404":
           $ref: '#/responses/Error'
         "415":
           $ref: '#/responses/Error'
@@ -155,6 +159,8 @@ paths:
           $ref: '#/responses/Error'
         "403":
           $ref: '#/responses/Error'
+        "404":
+          $ref: '#/responses/Error'
         "415":
           $ref: '#/responses/Error'
       security:
@@ -178,6 +184,8 @@ paths:
         "401":
           $ref: '#/responses/Error'
         "403":
+          $ref: '#/responses/Error'
+        "404":
           $ref: '#/responses/Error'
         "415":
           $ref: '#/responses/Error'

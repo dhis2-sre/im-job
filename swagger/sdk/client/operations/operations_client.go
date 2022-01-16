@@ -209,7 +209,7 @@ func (a *Client) RunJob(params *RunJobParams, authInfo runtime.ClientAuthInfoWri
 	}
 	op := &runtime.ClientOperation{
 		ID:                 "runJob",
-		Method:             "GET",
+		Method:             "POST",
 		PathPattern:        "/jobs/{id}/run",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},

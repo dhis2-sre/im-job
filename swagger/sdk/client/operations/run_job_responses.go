@@ -47,6 +47,12 @@ func (o *RunJobReader) ReadResponse(response runtime.ClientResponse, consumer ru
 			return nil, err
 		}
 		return nil, result
+	case 404:
+		result := NewRunJobNotFound()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	case 415:
 		result := NewRunJobUnsupportedMediaType()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -72,7 +78,7 @@ type RunJobOK struct {
 }
 
 func (o *RunJobOK) Error() string {
-	return fmt.Sprintf("[GET /jobs/{id}/run][%d] runJobOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /jobs/{id}/run][%d] runJobOK  %+v", 200, o.Payload)
 }
 func (o *RunJobOK) GetPayload() *models.RunJobResponse {
 	return o.Payload
@@ -103,7 +109,7 @@ type RunJobBadRequest struct {
 }
 
 func (o *RunJobBadRequest) Error() string {
-	return fmt.Sprintf("[GET /jobs/{id}/run][%d] runJobBadRequest ", 400)
+	return fmt.Sprintf("[POST /jobs/{id}/run][%d] runJobBadRequest ", 400)
 }
 
 func (o *RunJobBadRequest) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
@@ -124,7 +130,7 @@ type RunJobUnauthorized struct {
 }
 
 func (o *RunJobUnauthorized) Error() string {
-	return fmt.Sprintf("[GET /jobs/{id}/run][%d] runJobUnauthorized ", 401)
+	return fmt.Sprintf("[POST /jobs/{id}/run][%d] runJobUnauthorized ", 401)
 }
 
 func (o *RunJobUnauthorized) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
@@ -145,10 +151,31 @@ type RunJobForbidden struct {
 }
 
 func (o *RunJobForbidden) Error() string {
-	return fmt.Sprintf("[GET /jobs/{id}/run][%d] runJobForbidden ", 403)
+	return fmt.Sprintf("[POST /jobs/{id}/run][%d] runJobForbidden ", 403)
 }
 
 func (o *RunJobForbidden) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	return nil
+}
+
+// NewRunJobNotFound creates a RunJobNotFound with default headers values
+func NewRunJobNotFound() *RunJobNotFound {
+	return &RunJobNotFound{}
+}
+
+/* RunJobNotFound describes a response with status code 404, with default header values.
+
+RunJobNotFound run job not found
+*/
+type RunJobNotFound struct {
+}
+
+func (o *RunJobNotFound) Error() string {
+	return fmt.Sprintf("[POST /jobs/{id}/run][%d] runJobNotFound ", 404)
+}
+
+func (o *RunJobNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
@@ -166,7 +193,7 @@ type RunJobUnsupportedMediaType struct {
 }
 
 func (o *RunJobUnsupportedMediaType) Error() string {
-	return fmt.Sprintf("[GET /jobs/{id}/run][%d] runJobUnsupportedMediaType ", 415)
+	return fmt.Sprintf("[POST /jobs/{id}/run][%d] runJobUnsupportedMediaType ", 415)
 }
 
 func (o *RunJobUnsupportedMediaType) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {

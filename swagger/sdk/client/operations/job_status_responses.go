@@ -47,6 +47,12 @@ func (o *JobStatusReader) ReadResponse(response runtime.ClientResponse, consumer
 			return nil, err
 		}
 		return nil, result
+	case 404:
+		result := NewJobStatusNotFound()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	case 415:
 		result := NewJobStatusUnsupportedMediaType()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -149,6 +155,27 @@ func (o *JobStatusForbidden) Error() string {
 }
 
 func (o *JobStatusForbidden) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	return nil
+}
+
+// NewJobStatusNotFound creates a JobStatusNotFound with default headers values
+func NewJobStatusNotFound() *JobStatusNotFound {
+	return &JobStatusNotFound{}
+}
+
+/* JobStatusNotFound describes a response with status code 404, with default header values.
+
+JobStatusNotFound job status not found
+*/
+type JobStatusNotFound struct {
+}
+
+func (o *JobStatusNotFound) Error() string {
+	return fmt.Sprintf("[GET /jobs/running/{runId}/status][%d] jobStatusNotFound ", 404)
+}
+
+func (o *JobStatusNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }

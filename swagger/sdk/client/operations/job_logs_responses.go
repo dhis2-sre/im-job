@@ -44,6 +44,12 @@ func (o *JobLogsReader) ReadResponse(response runtime.ClientResponse, consumer r
 			return nil, err
 		}
 		return nil, result
+	case 404:
+		result := NewJobLogsNotFound()
+		if err := result.readResponse(response, consumer, o.formats); err != nil {
+			return nil, err
+		}
+		return nil, result
 	case 415:
 		result := NewJobLogsUnsupportedMediaType()
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
@@ -135,6 +141,27 @@ func (o *JobLogsForbidden) Error() string {
 }
 
 func (o *JobLogsForbidden) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	return nil
+}
+
+// NewJobLogsNotFound creates a JobLogsNotFound with default headers values
+func NewJobLogsNotFound() *JobLogsNotFound {
+	return &JobLogsNotFound{}
+}
+
+/* JobLogsNotFound describes a response with status code 404, with default header values.
+
+JobLogsNotFound job logs not found
+*/
+type JobLogsNotFound struct {
+}
+
+func (o *JobLogsNotFound) Error() string {
+	return fmt.Sprintf("[GET /jobs/running/{runId}/logs][%d] jobLogsNotFound ", 404)
+}
+
+func (o *JobLogsNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
 
 	return nil
 }
