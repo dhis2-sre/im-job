@@ -123,6 +123,10 @@ func (h Handler) Run(c *gin.Context) {
 	}
 
 	job, err := h.jobService.FindById(uint(id))
+	if err != nil {
+		_ = c.Error(err)
+		return
+	}
 
 	group, err := h.userClient.FindGroupById(token, request.GroupID)
 	if err != nil {
