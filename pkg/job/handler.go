@@ -78,7 +78,6 @@ func (h Handler) FindById(c *gin.Context) {
 }
 
 type RunJobRequest struct {
-	JobType  string            `json:"jobType" binding:"required"`
 	GroupID  uint              `json:"groupId" binding:"required"`
 	TargetID uint              `json:"targetId" binding:"required"`
 	Payload  map[string]string `json:"payload" binding:"required"`
@@ -123,13 +122,15 @@ func (h Handler) Run(c *gin.Context) {
 		return
 	}
 
+	job, err := h.jobService.FindById(uint(id))
+
 	group, err := h.userClient.FindGroupById(token, request.GroupID)
 	if err != nil {
 		_ = c.Error(err)
 		return
 	}
 
-	runId, err := h.jobService.Run(uint(id), request.JobType, request.TargetID, group, request.Payload)
+	runId, err := h.jobService.Run(uint(id), job.JobType, request.TargetID, group, request.Payload)
 	if err != nil {
 		_ = c.Error(err)
 		return

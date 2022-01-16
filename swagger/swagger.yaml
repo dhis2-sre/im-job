@@ -30,9 +30,6 @@ definitions:
         format: uint64
         type: integer
         x-go-name: GroupID
-      jobType:
-        type: string
-        x-go-name: JobType
       payload:
         additionalProperties:
           type: string

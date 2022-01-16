@@ -20,9 +20,6 @@ type RunJobRequest struct {
 	// group ID
 	GroupID uint64 `json:"groupId,omitempty"`
 
-	// job type
-	JobType string `json:"jobType,omitempty"`
-
 	// payload
 	Payload map[string]string `json:"payload,omitempty"`
 
