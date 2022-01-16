@@ -37,7 +37,7 @@ type kubernetesService struct{}
 func (k kubernetesService) RunJob(name, script, namespace string, payload map[string]string, configuration *models.ClusterConfiguration) (string, error) {
 	image := "dhis2/im-job-runner"
 	uuid := shortuuid.New()
-	runId := name + "-" + strings.ToLower(uuid)
+	runId := fmt.Sprintf("%s-%s", name, strings.ToLower(uuid))
 
 	client, err := k.getClient(configuration)
 	if err != nil {
