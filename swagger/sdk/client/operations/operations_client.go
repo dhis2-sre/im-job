@@ -32,6 +32,8 @@ type ClientOption func(*runtime.ClientOperation)
 type ClientService interface {
 	FindJob(params *FindJobParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*FindJobOK, error)
 
+	Health(params *HealthParams, opts ...ClientOption) (*HealthOK, error)
+
 	JobLogs(params *JobLogsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*JobLogsOK, error)
 
 	JobStatus(params *JobStatusParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*JobStatusOK, error)
@@ -79,6 +81,44 @@ func (a *Client) FindJob(params *FindJobParams, authInfo runtime.ClientAuthInfoW
 	// unexpected success response
 	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
 	msg := fmt.Sprintf("unexpected success response for findJob: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+  Health Service health status
+*/
+func (a *Client) Health(params *HealthParams, opts ...ClientOption) (*HealthOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewHealthParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "health",
+		Method:             "GET",
+		PathPattern:        "/health",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &HealthReader{formats: a.formats},
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*HealthOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for health: API contract not enforced by server. Client expected to get an error, but got: %T", result)
 	panic(msg)
 }
 

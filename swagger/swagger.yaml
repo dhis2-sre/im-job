@@ -24,6 +24,9 @@ definitions:
         x-go-name: GroupID
     type: object
     x-go-package: github.com/dhis2-sre/im-job/pkg/job
+  Response:
+    type: object
+    x-go-package: github.com/dhis2-sre/im-job/pkg/health
   RunJobRequest:
     properties:
       groupId:
@@ -60,6 +63,13 @@ info:
   title: Instance Job Manager Service.
   version: 0.1.0
 paths:
+  /health:
+    get:
+      description: Service health status
+      operationId: health
+      responses:
+        "200":
+          $ref: '#/responses/Response'
   /jobs:
     get:
       description: List jobs
@@ -198,6 +208,10 @@ responses:
     description: ""
     schema:
       $ref: '#/definitions/Job'
+  Response:
+    description: ""
+    schema:
+      $ref: '#/definitions/Response'
   RunJobResponse:
     description: ""
     schema:
