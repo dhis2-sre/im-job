@@ -1,38 +1,36 @@
-package docs
+package job
 
 import (
-	"github.com/dhis2-sre/im-job/pkg/job"
 	"github.com/dhis2-sre/im-job/pkg/model"
 )
 
-// swagger:response
-type Error struct {
-	// The error message
+// swagger:response Error
+type _ struct {
 	//in: body
-	Message string
+	Body string
 }
 
-// swagger:response
-type Job struct {
+// swagger:response Job
+type _ struct {
 	//in: body
-	Job model.Job
+	Body model.Job
 }
 
-// swagger:response
-type RunJobResponse struct {
+// swagger:response RunJobResponse
+type _ struct {
 	//in: body
-	RunJobResponse job.RunJobResponse
+	Body RunJobResponse
 }
 
 //swagger:parameters findJob runJob
-type IdParam struct {
+type _ struct {
 	// in: path
 	// required: true
 	ID uint `json:"id"`
 }
 
 //swagger:parameters jobStatus jobLogs
-type RunIdParam struct {
+type _ struct {
 	// in: path
 	// required: true
 	ID uint `json:"runId"`
@@ -43,7 +41,7 @@ type _ struct {
 	// Run job request body parameter
 	// in: body
 	// required: true
-	Body job.RunJobRequest
+	Body RunJobRequest
 }
 
 // swagger:parameters jobLogs
@@ -51,5 +49,5 @@ type _ struct {
 	// Logs request body parameter
 	// in: body
 	// required: true
-	Body job.LogsRequest
+	Body LogsRequest
 }
