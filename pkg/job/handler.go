@@ -81,7 +81,7 @@ func (h Handler) FindById(c *gin.Context) {
 type RunJobRequest struct {
 	GroupID  uint              `json:"groupId" binding:"required"`
 	TargetID uint              `json:"targetId" binding:"required"`
-	Payload  map[string]string `json:"payload" binding:"required"`
+	Payload  map[string]string `json:"payload"`
 }
 
 type RunJobResponse struct {
