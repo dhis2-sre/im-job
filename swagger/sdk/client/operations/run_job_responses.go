@@ -71,7 +71,7 @@ func NewRunJobOK() *RunJobOK {
 
 /* RunJobOK describes a response with status code 200, with default header values.
 
-RunJobResponse
+RunJobOK run job o k
 */
 type RunJobOK struct {
 	Payload *models.RunJobResponse

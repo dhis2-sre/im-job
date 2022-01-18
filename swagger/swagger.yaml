@@ -118,9 +118,7 @@ paths:
           $ref: '#/definitions/RunJobRequest'
       responses:
         "200":
-          description: RunJobResponse
-          schema:
-            $ref: '#/definitions/RunJobResponse'
+          $ref: '#/responses/RunJobResponse'
         "400":
           $ref: '#/responses/Error'
         "401":
@@ -200,7 +198,7 @@ responses:
     description: ""
     schema:
       $ref: '#/definitions/Job'
-  RunJob:
+  RunJobResponse:
     description: ""
     schema:
       $ref: '#/definitions/RunJobResponse'

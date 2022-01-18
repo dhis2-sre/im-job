@@ -19,9 +19,9 @@ type Job struct {
 }
 
 // swagger:response
-type RunJob struct {
+type RunJobResponse struct {
 	//in: body
-	RunJob job.RunJobResponse
+	RunJobResponse job.RunJobResponse
 }
 
 //swagger:parameters findJob runJob
