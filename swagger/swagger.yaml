@@ -25,6 +25,10 @@ definitions:
     type: object
     x-go-package: github.com/dhis2-sre/im-job/pkg/job
   Response:
+    properties:
+      status:
+        type: string
+        x-go-name: Status
     type: object
     x-go-package: github.com/dhis2-sre/im-job/pkg/health
   RunJobRequest:
